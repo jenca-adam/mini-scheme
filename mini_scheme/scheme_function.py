@@ -2,8 +2,9 @@ from .scheme_types import *
 from .scheme_pair import Pair,EmptyList
 from .scheme_repr import get_repr
 import typing
+import sys
 import inspect
-
+sys.setrecursionlimit(10000000)
 
 class SchemeTypeError(TypeError):
     __name__="type-error"
@@ -192,7 +193,6 @@ def _scheme_read(namespace=None):
 def _scheme_cond(*qs:List,namespace=None):
     for q in qs:
         if q.args[0].evaluate(namespace):
-
             return q.args[1].evaluate(namespace)
     return nil()
 @scheme_spdef("define")

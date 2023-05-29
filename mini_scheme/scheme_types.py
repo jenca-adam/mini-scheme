@@ -13,8 +13,6 @@ class SchemeType:
     _pythontypes=NotImplemented
     @classmethod
     def check(cls,block,force_token=False):
-        if getattr(block,'token',None)==Token.ARGUMENT_OR_FUNCTION:
-            return block.token in cls._tokens
         if (type(block)==type(cls)):
             return True
         return (block.token in cls._tokens) if force_token else (type(getattr(block,'value',block)) in cls._pythontypes)
@@ -32,9 +30,11 @@ class Any:
 class List(SchemeType):
     @classmethod
     def evaluate(cls,content,block,namespace=None):
+        if block.literal:
+            return Pair.from_list([i.content for i in content])
         from . import call_function,exists,Block
         if content and callable(content[0].evaluate(namespace)): 
-            return call_function(content[0].evaluate(namespace),Block(content[1:],Token.LIST),namespace)
+            return call_function(content[0].evaluate(namespace),Block(content[1:],Token.LIST,False),namespace)
         return Pair.from_list([i.evaluate(namespace) for i in content])
     _tokens=[Token.LIST]
     _pythontypes=[Pair,EmptyList,list]
@@ -49,30 +49,28 @@ class Boolean(SchemeType):
         return content=="#t"
 class NonNumericAtom(Atom):
     @classmethod
-    def evaluate(cls,content,*_):
-        return content
-    _tokens=[Token.ATOM]
-    _pythontypes=[str]
-class NumericAtom(Atom):
-    @classmethod
-    def evaluate(cls,content,*_):
-        return int(content)
-    _tokens=[Token.NUMERICAL_ATOM]
-    _pythontypes=[int]
-class ArgumentOrFunction(SchemeType):
-    @classmethod
-    def evaluate(cls,content,block,namespace=None):
-        from . import Namespace
-        namespace=namespace or Namespace()
+    def evaluate(cls,content,block,namespace):
+        
+        if block.literal:
+            return content
         if content in namespace:
             return namespace[content]
         raise SchemeNameError(
                             f"name {content!r} is not defined in the current namespace"
                             )
-    _tokens=[Token.ARGUMENT_OR_FUNCTION]
-    _pythontypes=[]
+    _tokens=[Token.ATOM]
+    _pythontypes=[str,]
+class NumericAtom(Atom):
+    @classmethod
+    def evaluate(cls,content,*_):
+        return int(content)
+    @classmethod
+    def get_value(cls,content,*_):
+        return int(content)
+    _tokens=[Token.NUMERICAL_ATOM]
+    _pythontypes=[int]
 
-SCHEME_CHECKABLE_TYPES=[List,Boolean,NumericAtom,NonNumericAtom,ArgumentOrFunction]
+SCHEME_CHECKABLE_TYPES=[List,Boolean,NumericAtom,NonNumericAtom]
 def find_type_by_value(val):
     for s in SCHEME_CHECKABLE_TYPES:
         if type(val) in s._pythontypes:

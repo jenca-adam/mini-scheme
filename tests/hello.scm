@@ -1,6 +1,6 @@
 (define greet(
 	      lambda () (
-			 (display '(Hello, world!))
+			 (display 'Hello!)
 			 (newline)
 			 )
 	      )

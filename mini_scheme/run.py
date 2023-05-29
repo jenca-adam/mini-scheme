@@ -47,7 +47,7 @@ under certain conditions, consult the license at https://github.com/jenca-adam/m
         except:
             break
         try:
-            print(get_repr(run_str(newcmd,False)))
+            print(run_str(newcmd,False))
         except Exception as e:
             print("ERROR:")
             if not hasattr(e,"__name__"):

@@ -4,15 +4,16 @@ from .scheme_function import Namespace
 class ASTError(Exception):
     __name__="parse-error"
 class Block:
-    def __init__(self,args,token,content=None):
+    def __init__(self,args,token,literal,content=None):
         self.args=args
+        self.literal=literal
         self.content=content or args
         self.token=token
         self.type=find_type(self,True)
-        self.value=None
     def evaluate(self,namespace=None):
-        self.value=self.value or self.type.evaluate(self.content,self,namespace)
-        return self.value
+        from .scheme_function import Namespace
+        namespace=namespace or Namespace()
+        return self.type.evaluate(self.content,self,namespace)
     def __repr__(self):
         return f'{self.content}'
 def _astize(t):
@@ -21,8 +22,8 @@ def _astize(t):
             t.token=Token.TRUE
         elif t.match.group()=="#f":
             t.token=Token.FALSE
-        return Block([],t.token,t.match.group('content'))
-    return Block(_ast(t[1:-1]),t[0].token)
+        return Block([],t.token,t.literal,t.match.group('content'))
+    return Block(_ast(t[1:-1]),t[0].token,t[0].literal)
 def _ast(tokens):
     l=[]
     nl=[]
