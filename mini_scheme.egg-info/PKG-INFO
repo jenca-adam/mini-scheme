@@ -1,0 +1,11 @@
+Metadata-Version: 2.1
+Name: mini-scheme
+Version: 0.0.1
+Summary: Mini SCHEME Interpreter, written in python
+Home-page: https://github.com/jenca-adam/mini-scheme
+Author: Adam Jenca
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Scheme
+Classifier: Topic :: Software Development :: Interpreters
+Classifier: Development Status :: 3 - AlphaLicense :: OSI Approved :: GNU General Public License v2 (GPLv2)
+License-File: LICENSE

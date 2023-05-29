@@ -24,10 +24,10 @@ class Completer(object):
             return None
 class RunnerError(Exception):
     __name__='syntax-error'
-def run_str(code,enable_more=True):
+def run_str(code,enable_more=False):
     result=[it.evaluate() for it in ast(code)]
     if enable_more:
-        return result
+        return result[-1]
     if len(result)==1:
         return result[0]
     elif len(result)==0:
@@ -47,7 +47,7 @@ under certain conditions, consult the license at https://github.com/jenca-adam/m
         except:
             break
         try:
-            print(get_repr(run_str(newcmd,False)))
+            print(get_repr(run_str(newcmd)))
         except Exception as e:
             print("ERROR:")
             if not hasattr(e,"__name__"):
